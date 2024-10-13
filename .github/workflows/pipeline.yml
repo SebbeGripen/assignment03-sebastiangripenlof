@@ -14,9 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: check user
-        run: echo $USER
-
       - name: Checkout code
         uses: actions/checkout@v4
 
