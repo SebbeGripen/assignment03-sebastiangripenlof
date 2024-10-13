@@ -28,8 +28,8 @@ jobs:
         run: npm install
 
       #install playwright
-      #- name: Install playwright
-      #  run: npx playwright install
+      - name: Install playwright
+        run: npx playwright install
 
       #pull docker image
       - name: Pull Docker image
