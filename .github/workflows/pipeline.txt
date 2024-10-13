@@ -1,0 +1,55 @@
+name: Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-automated-tests:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: check user
+        run: echo $USER
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node packages
+        run: npm install
+
+      - name: Install Playwright
+        run: npx playwright install
+
+      - name: Pull Docker image
+        run: docker pull rasilva1986/my-vue-app:v1
+
+      - name: Start application
+        run: docker run -d -p 3000:3000 rasilva1986/my-vue-app:v1
+
+      - name: Wait until the application is up
+        run: npx wait-on http://localhost:3000/
+
+      - name: Run tests
+        env:
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+        run: npx playwright test
+
+      - name: Save test run artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: ./playwright-report
+          if-no-files-found: warn
+          include-hidden-files: false
